@@ -1,18 +1,27 @@
 const path = require('path');
+const http = require('http');
 const express = require('express');
-
-// Pathname to talk to public folder
-const publicPath = path.join(__dirname, '../public');
+const socketIO = require('socket.io');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIO(server); // web socket server
 
+// Pathname to talk to public folder
+const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
 
-app.get('/', (req, res) => {
-  res.sendFile('/index.html');
+// register event listener
+// connection = listen for new connection
+io.on('connection', (socket) => {
+  console.log('New User Connected');
+
+  socket.on('disconnect', () => {
+    console.log('Client has Disconnected');
+  });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`App is listening on Port: ${PORT}`);
 });
