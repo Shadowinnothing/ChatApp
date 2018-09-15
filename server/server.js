@@ -24,12 +24,12 @@ io.on('connection', (socket) => {
   // emits to every user except who fires the event
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User has Joined!'));
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('Create Message: ', message);
     // Socket.emit emits to one socket
     // io.emit emits to every socket
     io.emit('newMessage', generateMessage(message.from, message.text));
-
+    callback('This is from the server');
   });
 
   socket.on('disconnect', () => {
