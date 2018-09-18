@@ -11,16 +11,35 @@ socket.on('disconnect', function(){
 socket.on('newMessage', function(message){
   let formattedTime = moment(message.createdAt).format('h:mm a');
 
+  let template = jQuery('#message-template').html();
+  let _html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
+  jQuery('#messages').append(_html);
+
+  /*
   //console.log('New Message: ', message);
   let li = jQuery('<li></li>');
   li.text(`${message.from} [${formattedTime}]: ${message.text}`);
 
   jQuery('#messages').append(li);
+  */
 });
 
 socket.on('newLocationMessage', function(message){
   let formattedTime = moment(message.createdAt).format('h:mm a');
 
+  let template = jQuery('#location-message-template').html();
+  let _html = Mustache.render(template, {
+    from: message.from,
+    url: message.url,
+    createdAt: formattedTime
+  });
+  jQuery('#messages').append(_html);
+
+  /*
   let li = jQuery('<li></li>');
   let a = jQuery('<a target="_blank">My Current Location</a>');
 
@@ -29,6 +48,7 @@ socket.on('newLocationMessage', function(message){
   li.append(a);
 
   jQuery('#messages').append(li);
+  */
 });
 
 jQuery('#message-form').on('submit', function(e){
