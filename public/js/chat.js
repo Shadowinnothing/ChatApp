@@ -23,7 +23,9 @@ socket.on('connect', function(){
   let params = jQuery.deparam(window.location.search);
   // convert room toUpperCase so people in rooms
   // 'PACKERS' and 'packers' go to same room
+  // also does the same with the name property
   params.room = params.room.toUpperCase();
+  params.name = params.name.toUpperCase();
 
   socket.emit('join', params, function(err){
     if(err){

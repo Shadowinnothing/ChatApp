@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 class Users {
   constructor(){
     this.users = []
