@@ -39,6 +39,9 @@ io.on('connection', (socket) => {
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, params.room);
 
+    // emit current rooms
+    socket.emit('currentRooms', users.getRoomList());
+
     // only emit messages to users room
     io.to(params.room).emit('updateUserList', users.getUserList(params.room));
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the Chat App!'));

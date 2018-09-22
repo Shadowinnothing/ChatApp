@@ -78,8 +78,14 @@ describe('Users', () => {
 
   it('should not find a user by name if name doesnt exist', () => {
     let user = users.getUserName('Aaron Rodgers');
-    
+
     expect(user).toBeFalsy();
+  });
+
+  it('should return list of current rooms', () => {
+    let rooms = users.getRoomList();
+
+    expect(rooms.length).toBe(2);
   });
 
 });
