@@ -20,7 +20,10 @@ function scrollToBottom(){
 socket.on('connect', function(){
   console.log('Connected to Server');
 
-  let params = jQuery.deparam(window.location.search)
+  let params = jQuery.deparam(window.location.search);
+  // convert room toUpperCase so people in rooms
+  // 'PACKERS' and 'packers' go to same room
+  params.room = params.room.toUpperCase();
 
   socket.emit('join', params, function(err){
     if(err){
@@ -30,6 +33,13 @@ socket.on('connect', function(){
       console.log('[chat.js]No Error');
     }
   });
+
+  // show room name on chat.html page
+  let template = jQuery('#roomName').html();
+  let _html = Mustache.render(template, {
+    room: params.room
+  });
+  jQuery('#roomName').html(_html);
 });
 
 socket.on('disconnect', function(){

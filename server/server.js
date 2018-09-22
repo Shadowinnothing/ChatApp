@@ -2,6 +2,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
+const _ = require('lodash');
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
@@ -22,6 +23,7 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New User Connected');
 
+  // reject user if name or room are not valid strings
   socket.on('join', (params, callback) => {
     if(!isRealString(params.name) || !isRealString(params.room)){
       return callback('Name and Room name are Required');
@@ -29,9 +31,11 @@ io.on('connection', (socket) => {
 
     socket.join(params.room);
 
+    // remove user in case of duplicates
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, params.room);
 
+    // only emit messages to users room
     io.to(params.room).emit('updateUserList', users.getUserList(params.room));
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the Chat App!'));
     // emits to every user except who fires the event
@@ -40,16 +44,19 @@ io.on('connection', (socket) => {
     callback();
   });
 
+  // sends a message to everyone in current room
   socket.on('createMessage', (message, callback) => {
     const user = users.getUser(socket.id);
     if(user && isRealString(message.text)){
       // Socket.emit emits to one socket
       // io.emit emits to every socket
+      // to() sends to specific socket
       io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
     }
     callback();
   });
 
+  // send message with link to current location
   socket.on('createLocationMessage', (coords) => {
     const user = users.getUser(socket.id);
     if(user){
@@ -57,6 +64,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // disconnect user from page
   socket.on('disconnect', () => {
     let user = users.removeUser(socket.id);
     if(user){
@@ -66,6 +74,8 @@ io.on('connection', (socket) => {
   });
 });
 
+// connects to PORT for app
+// port is 3000 by default, but can be anything heroku tells it to be
 server.listen(PORT, () => {
   console.log(`App is listening on Port: ${PORT}`);
 });

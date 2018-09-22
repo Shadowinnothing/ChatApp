@@ -58,16 +58,28 @@ describe('Users', () => {
     expect(users.users.length).toEqual(3);
   });
 
-  it('should find user', () => {
+  it('should find user by id', () => {
     let user = users.getUser('2');
 
     expect(user).toBe(users.users[1]);
   });
 
-  it('should not find user', () => {
+  it('should not find user by id', () => {
     let user = users.getUser('69');
 
     expect(user).toNotExist();
+  });
+
+  it('should find a user by name', () => {
+    let user = users.getUserName('Mike');
+
+    expect(user.name).toEqual('Mike');
+  });
+
+  it('should not find a user by name if name doesnt exist', () => {
+    let user = users.getUserName('Aaron Rodgers');
+    
+    expect(user).toBeFalsy();
   });
 
 });
